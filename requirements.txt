@@ -1,0 +1,9 @@
+Flask==3.0.2
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
+Flask-Login==0.6.3
+pandas
+Werkzeug==3.0.3
+email-validator==2.1.0
+requests
+huggingface_hub
