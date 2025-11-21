@@ -58,7 +58,7 @@ pip --version
   "ai": {
     "enabled": true,
     "model": "openai/gpt-oss-20b",
-    "hf_api_token": "ваш_токен_HF"
+    "hf_api_token": "ваш_токен_HuggingFace"
   },
   "email": {
     "sender_email": "ваш_email@gmail.com",
@@ -68,7 +68,7 @@ pip --version
 }
 ```
 - `main`: сетевые параметры и SSL. Если `ssl_enabled=true`, укажите пути к сертификату и ключу.
-- `ai`: конфигурация Hugging Face. Нужен действующий `hf_api_token` с доступом к выбранной модели.
+- `ai`: конфигурация Hugging Face. Нужен действующий `hf_api_token` с доступом к выбранной модели. Получить токен: [клик](https://huggingface.co/settings/tokens)
 - `email`: учетные данные почты для отправки кодов подтверждения (используйте пароль приложения Gmail).
 - `secret_key`: любая случайная строка для подписи сессий Flask.
 
