@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Финансовый Трекер{% endblock %}
+
+{% block content %}
+<h1 class="section-title">Финансовая панель</h1>
+
+<div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+    <div class="card text-center">
+        <h3>Текущий баланс</h3>
+        <h2 class="{% if balance >= 0 %}balance-positive{% else %}balance-negative{% endif %}">
+            {{ "%.2f"|format(balance) }} ₽
+        </h2>
+    </div>
+
+    <div class="card text-center">
+        <h3>Доходы</h3>
+        <h3 class="balance-positive">{{ "%.2f"|format(transactions|selectattr('amount', 'greaterthan', 0)|sum(attribute='amount')) }} ₽</h3>
+    </div>
+
+    <div class="card text-center">
+        <h3>Расходы</h3>
+        <h3 class="balance-negative">{{ "%.2f"|format(transactions|selectattr('amount', 'lessthan', 0)|sum(attribute='amount')|abs) }} ₽</h3>
+    </div>
+</div>
+
+<div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+    <div class="card">
+        <h3><i class="fas fa-chart-pie"></i> Расходы по категориям</h3>
+        <div class="chart-container">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-bullseye"></i> Финансовые цели</h3>
+        {% if goals %}
+        <div class="table-responsive">
+            <table class="table" style="margin-top: 10px; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Прогресс</th>
+                        <th>Текущая сумма</th>
+                        <th>Целевая сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for goal in goals %}
+                    <tr>
+                        <td>{{ goal.name }}</td>
+                        <td>
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: {{ goal.progress_percent }}%;"
+                                     aria-valuenow="{{ goal.current_amount }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="{{ goal.target_amount }}">
+                                    {% if goal.is_completed %}Выполнено{% else %}{{ goal.progress_percent }}%{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="balance-positive">{{ "%.2f"|format(goal.current_amount) }} ₽</td>
+                        <td>{{ "%.2f"|format(goal.target_amount) }} ₽</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="no-data-text">У вас пока нет целей. <a href="{{ url_for('add_goal') }}" style="color: var(--primary);">Добавить цель</a></p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-list"></i> Последние транзакции</h3>
+    {% if transactions %}
+    <div class="table-responsive">
+        <table class="table" style="margin-top: 10px; width: 100%;">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Категория</th>
+                    <th>Описание</th>
+                    <th>Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions[-10:] %}
+                <tr>
+                    <td>{{ transaction.date.strftime('%d.%m.%Y') }}</td>
+                    <td>{{ category_mapping.get(transaction.category, transaction.category) }}</td>
+                    <td>{{ transaction.description or '-' }}</td>
+                    <td class="{% if transaction.amount >= 0 %}balance-positive{% else %}balance-negative{% endif %}">
+                        {{ "%.2f"|format(transaction.amount) }} ₽
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="no-data-text">У вас пока нет транзакций. <a href="{{ url_for('add_transaction') }}" style="color: var(--primary);">Добавить первую транзакцию</a></p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const categoryData = {{ category_spending|tojson }};
+let categoryChart;
+
+function updateChartTheme(chart, isDark) {
+    chart.options.plugins.legend.labels.color = isDark ? '#F3F4F6' : '#333333';
+    chart.options.plugins.tooltip.titleColor = isDark ? '#FFFFFF' : '#000000';
+    chart.options.plugins.tooltip.bodyColor = isDark ? '#FFFFFF' : '#000000';
+    chart.options.plugins.tooltip.backgroundColor = isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)';
+    chart.update();
+}
+
+if (Object.keys(categoryData).length > 0) {
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    categoryChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: Object.keys(categoryData),
+            datasets: [{
+                data: Object.values(categoryData),
+                backgroundColor: [
+                    '#8B5CF6', '#36A2EB', '#10B981', '#F59E0B', '#EF4444', '#EC4899'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: isDark ? '#F3F4F6' : '#333333'
+                    }
+                },
+                tooltip: {
+                    titleColor: isDark ? '#FFFFFF' : '#000000',
+                    bodyColor: isDark ? '#FFFFFF' : '#000000',
+                    backgroundColor: isDark ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)'
+                }
+            }
+        }
+    });
+
+    window.addEventListener('themeChanged', (event) => {
+        const isDark = event.detail.theme === 'dark';
+        updateChartTheme(categoryChart, isDark);
+    });
+} else {
+    const textColor = getComputedStyle(document.body).getPropertyValue('--text-light').trim();
+    document.getElementById('categoryChart').parentElement.innerHTML = `<p style="color: ${textColor}; opacity: 0.7; text-align: center; padding: 2rem;">Нет данных для отображения. Добавьте расходы, чтобы увидеть диаграмму.</p>`;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить транзакцию - Финансовый Трекер{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 4rem auto; padding: 2rem;">
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 2rem;"><i class="fas fa-plus"></i> Добавить транзакцию</h2>
+        <form method="POST" style="text-align: center;">
+            {{ form.hidden_tag() }}
+            <div style="margin-bottom: 2rem; padding: 0 1rem;">
+                <label for="amount" style="display: block; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem;">Сумма</label>
+                {{ form.amount(class="form-control", id="amount") }}
+                {% if form.amount.errors %}
+                <div style="color: #EF4444; font-size: 0.9rem; margin-top: 1rem; margin-bottom: 1rem;">
+                    {% for error in form.amount.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div style="margin-bottom: 2rem; padding: 0 1rem;">
+                <label for="type" style="display: block; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem;">Тип</label>
+                {{ form.type(class="form-control", id="type") }}
+                {% if form.type.errors %}
+                <div style="color: #EF4444; font-size: 0.9rem; margin-top: 1rem; margin-bottom: 1rem;">
+                    {% for error in form.type.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div id="subcategory-container" style="margin-bottom: 2rem; padding: 0 1rem; display: none; opacity: 0; transition: opacity 0.3s ease, max-height 0.3s ease; max-height: 0; overflow: hidden;">
+                <label for="subcategory" style="display: block; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem;">Категория расхода</label>
+                {{ form.subcategory(class="form-control", id="subcategory") }}
+                {% if form.subcategory.errors %}
+                <div style="color: #EF4444; font-size: 0.9rem; margin-top: 1rem; margin-bottom: 1rem;">
+                    {% for error in form.subcategory.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div style="margin-bottom: 2rem; padding: 0 1rem;">
+                <label for="description" style="display: block; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem;">Описание</label>
+                {{ form.description(class="form-control", id="description", rows=3) }}
+            </div>
+            {{ form.submit(class="btn", style="width: 100%; margin-bottom: 1rem;", value="Добавить транзакцию") }}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary" style="width: 100%;">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('type').addEventListener('change', function() {
+    const subcategoryContainer = document.getElementById('subcategory-container');
+    const subcategorySelect = document.getElementById('subcategory');
+    if (this.value === 'expense') {
+        subcategoryContainer.style.display = 'block';
+        subcategoryContainer.style.maxHeight = '200px';
+        setTimeout(() => {
+            subcategoryContainer.style.opacity = '1';
+        }, 10);
+        subcategorySelect.required = true;
+    } else {
+        subcategoryContainer.style.opacity = '0';
+        subcategoryContainer.style.maxHeight = '0';
+        setTimeout(() => {
+            subcategoryContainer.style.display = 'none';
+        }, 300);
+        subcategorySelect.required = false;
+    }
+});
+</script>
+{% endblock %}
