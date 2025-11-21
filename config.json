@@ -1,0 +1,19 @@
+{
+  "main": {
+    "host": "0.0.0.0",
+    "port": 5000,
+    "ssl_enabled": false,
+    "ssl_cert": "",
+    "ssl_key": ""
+  },
+  "ai": {
+    "enabled": true,
+    "model": "openai/gpt-oss-20b",
+    "hf_api_token": "ваш-токен-HuggingFace"
+  },
+  "email": {
+    "sender_email": "почта-с-которой-отправлять-email-ОБЯЗАТЕЛЬНО-GMAIL!",
+    "sender_password": "получить-на-https://myaccount.google.com/apppasswords"
+  },
+  "secret_key": "ключ-для-защиты-бд"
+}
