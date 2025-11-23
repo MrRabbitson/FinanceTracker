@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="text-align: center; padding: 6rem 2rem; position: relative; overflow: hidden;">
+    <div style="max-width: 800px; margin: 0 auto; position: relative; z-index: 2;">
+        <h1 style="font-size: 3.2rem; font-weight: 800; margin-bottom: 1.2rem; color: var(--text-lighter); text-shadow: 0 0 20px var(--primary);">
+            Добро пожаловать в Трекер
+        </h1>
+        <p style="font-size: 1.3rem; margin-bottom: 2.5rem; color: var(--text-light); line-height: 1.6;">
+            Управляйте своими финансами эффективно. Отслеживайте доходы, расходы и достигайте финансовых целей.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 2rem;">
+            <div style="text-align: center;">
+                <i class="fas fa-plus-circle" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                <h4>Добавляйте транзакции</h4>
+                <p class="feature-text">Легко добавляйте доходы и расходы по категориям</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-chart-pie" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h4>Визуализируйте данные</h4>
+                <p class="feature-text">Просматривайте расходы по категориям на интерактивных графиках</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-bullseye" style="font-size: 3rem; color: #F59E0B; margin-bottom: 1rem;"></i>
+                <h4>Ставьте цели</h4>
+                <p class="feature-text">Создавайте финансовые цели и отслеживайте прогресс</p>
+            </div>
+        </div>
+        <div style="margin-top: 2rem;">
+            <a href="{{ url_for('register') }}" class="btn" style="margin-right: 1rem;">Начать работу</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-secondary">Войти</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

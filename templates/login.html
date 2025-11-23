@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Вход - Финансовый Трекер{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 4rem auto; padding: 2rem;">
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 2rem;"><i class="fas fa-sign-in-alt"></i> Вход</h2>
+        <form method="POST" style="text-align: center;">
+            {{ form.hidden_tag() }}
+            <div style="margin-bottom: 2rem; padding: 0 1rem;">
+                <label for="email" style="display: block; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem;">Электронная почта</label>
+                {{ form.email(class="form-control", id="email") }}
+                {% if form.email.errors %}
+                <div style="color: #EF4444; font-size: 0.9rem; margin-top: 1rem; margin-bottom: 1rem;">
+                    {% for error in form.email.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div style="margin-bottom: 3rem; padding: 0 1rem;">
+                <label for="password" style="display: block; margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem;">Пароль</label>
+                {{ form.password(class="form-control", id="password") }}
+                {% if form.password.errors %}
+                <div style="color: #EF4444; font-size: 0.9rem; margin-top: 1rem; margin-bottom: 1rem;">
+                    {% for error in form.password.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {{ form.submit(class="btn", style="width: 100%;", value="Войти") }}
+        </form>
+        <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--primary-transparent);">
+            <small style="color: var(--text-light); opacity: 0.7;">Нет аккаунта? <a href="{{ url_for('register') }}" style="color: var(--primary);">Зарегистрироваться</a></small>
+        </div>
+    </div>
+</div>
+{% endblock %}
