@@ -13,6 +13,8 @@
 python --version
 pip --version
 ```
+##
+Демонстрация проекта: https://finance-tracker.ru
 
 ## Установка и запуск (Windows, CMD)
 
