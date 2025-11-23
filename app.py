@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from sqlalchemy import or_
 from wtforms import StringField, PasswordField, FloatField, SelectField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, EqualTo
+from wtforms.validators import DataRequired, Email, Length, EqualTo, NumberRange
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import pandas as pd
@@ -111,7 +111,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Войти')
 
 class TransactionForm(FlaskForm):
-    amount = FloatField('Сумма', validators=[DataRequired(message='Введите сумму.')])
+    amount = FloatField('Сумма', validators=[DataRequired(message='Введите сумму.'), NumberRange(min=0, message='Сумма должна быть положительной.')])
     type = SelectField('Тип', choices=[
         ('income', 'Доход'),
         ('expense', 'Расход')
@@ -128,8 +128,8 @@ class TransactionForm(FlaskForm):
 
 class GoalForm(FlaskForm):
     name = StringField('Название цели', validators=[DataRequired(message='Введите название цели.')])
-    target_amount = FloatField('Целевая сумма', validators=[DataRequired(message='Введите целевую сумму.')])
-    current_amount = FloatField('Текущая сумма', default=0)
+    target_amount = FloatField('Целевая сумма', validators=[DataRequired(message='Введите целевую сумму.'), NumberRange(min=0, message='Сумма должна быть положительной.')])
+    current_amount = FloatField('Текущая сумма', validators=[NumberRange(min=0, message='Сумма должна быть положительной.')], default=0)
     description = TextAreaField('Описание')
     submit = SubmitField('Добавить цель')
 
@@ -303,6 +303,84 @@ def add_goal():
         flash('Цель добавлена!', 'success')
         return redirect(url_for('dashboard'))
     return render_template('add_goal.html', form=form)
+
+@app.route('/edit_transaction/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_transaction(id):
+    transaction = Transaction.query.get_or_404(id)
+    if transaction.user_id != current_user.id:
+        abort(403)
+    form = TransactionForm()
+    if request.method == 'POST':
+        if form.type.data == 'expense' and not form.subcategory.data:
+            form.subcategory.errors.append('Выберите категорию.')
+        elif form.validate_on_submit():
+            if form.type.data == 'income':
+                amount = form.amount.data
+                category = 'income'
+            else:
+                amount = -form.amount.data
+                category = form.subcategory.data
+            transaction.amount = amount
+            transaction.category = category
+            transaction.description = form.description.data
+            db.session.commit()
+            flash('Транзакция обновлена!', 'success')
+            return redirect(url_for('dashboard'))
+    else:
+        if transaction.amount > 0:
+            form.type.data = 'income'
+            form.amount.data = transaction.amount
+        else:
+            form.type.data = 'expense'
+            form.amount.data = -transaction.amount
+            form.subcategory.data = transaction.category
+        form.description.data = transaction.description
+    return render_template('edit_transaction.html', form=form)
+
+@app.route('/delete_transaction/<int:id>', methods=['POST'])
+@login_required
+def delete_transaction(id):
+    transaction = Transaction.query.get_or_404(id)
+    if transaction.user_id != current_user.id:
+        abort(403)
+    db.session.delete(transaction)
+    db.session.commit()
+    flash('Транзакция удалена!', 'success')
+    return redirect(url_for('dashboard'))
+
+@app.route('/edit_goal/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_goal(id):
+    goal = Goal.query.get_or_404(id)
+    if goal.user_id != current_user.id:
+        abort(403)
+    form = GoalForm()
+    if form.validate_on_submit():
+        goal.name = form.name.data
+        goal.target_amount = form.target_amount.data
+        goal.current_amount = form.current_amount.data
+        goal.description = form.description.data
+        db.session.commit()
+        flash('Цель обновлена!', 'success')
+        return redirect(url_for('dashboard'))
+    else:
+        form.name.data = goal.name
+        form.target_amount.data = goal.target_amount
+        form.current_amount.data = goal.current_amount
+        form.description.data = goal.description
+    return render_template('edit_goal.html', form=form)
+
+@app.route('/delete_goal/<int:id>', methods=['POST'])
+@login_required
+def delete_goal(id):
+    goal = Goal.query.get_or_404(id)
+    if goal.user_id != current_user.id:
+        abort(403)
+    db.session.delete(goal)
+    db.session.commit()
+    flash('Цель удалена!', 'success')
+    return redirect(url_for('dashboard'))
 
 @app.route('/analytics')
 @login_required
