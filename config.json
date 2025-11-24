@@ -9,7 +9,7 @@
   "ai": {
     "enabled": true,
     "model": "openai/gpt-oss-20b",
-    "hf_api_token": "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"
+    "hf_api_token": "API-токен-HuggingFace"
   },
   "email": {
     "sender_email": "почта-с-которой-отправлять-email-ОБЯЗАТЕЛЬНО-GMAIL!",
@@ -18,3 +18,4 @@
   "secret_key": "ключ-для-защиты-бд"
 
 }
+
