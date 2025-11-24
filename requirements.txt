@@ -7,3 +7,4 @@ Werkzeug==3.0.3
 email-validator==2.1.0
 requests
 huggingface_hub
+pytest
