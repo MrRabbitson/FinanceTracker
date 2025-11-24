@@ -19,7 +19,9 @@ pip --version
 ## Установка и запуск (Windows, CMD)
 
 1. **Скачайте проект**
-   - Склонируйте репозиторий (если установлен git): `git clone https://github.com/MrRabbitson/FinanceTracker.git <имя папки>`
+   - Склонируйте репозиторий (если установлен git): 
+   ```git config --global http.sslVerify false
+      git clone https://github.com/MrRabbitson/FinanceTracker.git```
    - Или скачайте папку с проектом на диск, например `C:\projects\finance-tracker`.
 
 2. **Установите зависимости**
