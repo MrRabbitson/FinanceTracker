@@ -9,11 +9,12 @@
   "ai": {
     "enabled": true,
     "model": "openai/gpt-oss-20b",
-    "hf_api_token": "ваш-токен-HuggingFace"
+    "hf_api_token": "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"
   },
   "email": {
     "sender_email": "почта-с-которой-отправлять-email-ОБЯЗАТЕЛЬНО-GMAIL!",
     "sender_password": "получить-на-https://myaccount.google.com/apppasswords"
   },
   "secret_key": "ключ-для-защиты-бд"
+
 }
