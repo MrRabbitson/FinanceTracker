@@ -20,8 +20,9 @@ pip --version
 
 1. **Скачайте проект**
    - Склонируйте репозиторий (если установлен git): 
-   ```git config --global http.sslVerify false
-      git clone https://github.com/MrRabbitson/FinanceTracker.git
+   ```bash
+   git config --global http.sslVerify false
+   git clone https://github.com/MrRabbitson/FinanceTracker.git
    ```
    - Или скачайте папку с проектом на диск, например `C:\projects\finance-tracker`.
 
